@@ -22,5 +22,11 @@ namespace BookAdvisor.Infrastructure.Persistence.Repositories
         {
             return await _context.Books.FirstOrDefaultAsync(b => b.Id == id);
         }
+
+        public async Task UpdateAsync(Book book)
+        {
+            _context.Books.Update(book);
+            await _context.SaveChangesAsync();
+        }
     }
 }

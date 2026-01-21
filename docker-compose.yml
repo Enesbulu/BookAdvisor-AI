@@ -14,5 +14,16 @@ services:
             - pgdata:/var/lib/postgresql/data
         restart: always
 
+    rabbitmq:
+        image: rabbitmq:3-management
+        container_name: bookadvisor_rabbitmq
+        ports:
+          - "5672:5672"   # Uygulama iletişimi
+          - "15672:15672" # Yönetim Paneli (GUI)
+        environment:
+          - RABBITMQ_DEFAULT_USER=guest
+          - RABBITMQ_DEFAULT_PASS=guest
+        restart: always
+
 volumes:
     pgdata:
