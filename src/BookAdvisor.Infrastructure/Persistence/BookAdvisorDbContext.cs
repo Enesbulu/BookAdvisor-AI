@@ -1,14 +1,14 @@
 using BookAdvisor.Domain.Entities;
+using BookAdvisor.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookAdvisor.Infrastructure.Persistence
 {
-    public class BookAdvisorDbContext : DbContext
+    public class BookAdvisorDbContext : IdentityDbContext<ApplicationUser>
     {
         public BookAdvisorDbContext(DbContextOptions<BookAdvisorDbContext> options)
-            : base(options)
-        {
-        }
+            : base(options){}
 
         public DbSet<Book> Books { get; set; }
 
@@ -23,6 +23,5 @@ namespace BookAdvisor.Infrastructure.Persistence
 
             base.OnModelCreating(modelBuilder);
         }
-
     }
 }

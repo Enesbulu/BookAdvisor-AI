@@ -1,9 +1,11 @@
 using BookAdvisor.Application.Interfaces;
 using BookAdvisor.Domain.Interfaces;
 using BookAdvisor.Infrastructure.AI;
+using BookAdvisor.Infrastructure.Identity;
 using BookAdvisor.Infrastructure.Messaging;
 using BookAdvisor.Infrastructure.Persistence;
 using BookAdvisor.Infrastructure.Persistence.Repositories;
+using BookAdvisor.Infrastructure.Services;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,8 +17,14 @@ namespace BookAdvisor.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
+            //DbContext Kurulumu
             services.AddDbContext<BookAdvisorDbContext>(opt => opt.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
+            //Identity Core Kurulumu
+            services.AddIdentityCore<ApplicationUser>()
+                .AddEntityFrameworkStores<BookAdvisorDbContext>();
+
+            //MassTransit ve RabbitMQ Kurulumu
             services.AddMassTransit(busConfigurrator =>
                 {
                     busConfigurrator.SetKebabCaseEndpointNameFormatter();
@@ -38,13 +46,13 @@ namespace BookAdvisor.Infrastructure
                 }
             );
 
-
+            //Servis Kayıtları
             services.AddScoped<IBookRepository, BookRepository>();
             services.AddScoped<IAiService, GeminiService>();
-
+            services.AddScoped<IAiKeyProvider, AiKeyProvider>();   //BYOK Servisi
+            services.AddScoped<IIdentityService, IdentityService>();
 
             return services;
-
         }
     }
 }
