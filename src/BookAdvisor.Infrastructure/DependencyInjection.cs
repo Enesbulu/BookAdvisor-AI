@@ -1,4 +1,6 @@
+using BookAdvisor.Application.Interfaces;
 using BookAdvisor.Domain.Interfaces;
+using BookAdvisor.Infrastructure.AI;
 using BookAdvisor.Infrastructure.Persistence;
 using BookAdvisor.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +16,11 @@ namespace BookAdvisor.Infrastructure
             services.AddDbContext<BookAdvisorDbContext>(opt => opt.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IBookRepository, BookRepository>();
+            services.AddScoped<IAiService, GeminiService>();
+
+
             return services;
+
         }
     }
 }
