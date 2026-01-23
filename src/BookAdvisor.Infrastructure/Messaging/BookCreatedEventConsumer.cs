@@ -9,11 +9,13 @@ namespace BookAdvisor.Infrastructure.Messaging
     {
         private readonly IAiService _aiService;
         private readonly IBookRepository _bookRepository;
+        private readonly IAiKeyProvider _aiKeyProvider;
 
-        public BookCreatedEventConsumer(IAiService aiService, IBookRepository bookRepository)
+        public BookCreatedEventConsumer(IAiService aiService, IBookRepository bookRepository, IAiKeyProvider aiKeyProvider)
         {
             _aiService = aiService;
             _bookRepository = bookRepository;
+            _aiKeyProvider = aiKeyProvider;
         }
 
         public async Task Consume(ConsumeContext<BookCreatedEvent> context)
@@ -22,32 +24,20 @@ namespace BookAdvisor.Infrastructure.Messaging
             {
                 //Event'ten verileri al
                 var message = context.Message;
-
-                Console.WriteLine($"[Consumer] Mesaj alındı! Kitap ID: {message.BookId}, Başlık: {message.Title}");
                 var book = await _bookRepository.GetByIdAsync(message.BookId);
-                if (book == null)
-                {
-                    Console.WriteLine($"[Consumer HATA] Kitap veritabanında bulunamadı! ID: {message.BookId}");
-                    return; // İşlemi kes
-                }
-                Console.WriteLine("[Consumer] Kitap bulundu, AI servisine gidiliyor...");
+                if (book == null) return; // İşlemi kes
 
+                //Kullanıcının (veya sistemin) API Key'ini bul
+                var apiKey = await _aiKeyProvider.GetApiKeyAsync(message.UserId);
 
                 // AI Servisine git (Burası uzun sürse de API'yi kilitlemez!)
-                var aiSummary = await _aiService.GenerateBookSummaryAsync(message.Title, message.Author);
+                var aiSummary = await _aiService.GenerateBookSummaryAsync(title: message.Title, author: message.Author, apiKey: apiKey);
 
-                Console.WriteLine($"[Consumer] AI Cevap döndü: {aiSummary.Substring(0, 20)}..."); // İlk 20 karakteri göster
-
-
-
-                // Kitabı bul ve güncelle
-                //var book = await _bookRepository.GetByIdAsync(message.BookId);
+                // Kitabı güncelle
                 if (book != null)
                 {
                     book.UpdateDetails(book.Title, aiSummary);
-
                     await _bookRepository.UpdateAsync(book);
-                    Console.WriteLine("[Consumer] Veritabanı başarıyla güncellendi!");
                 }
             }
             catch (Exception ex)
@@ -55,7 +45,7 @@ namespace BookAdvisor.Infrastructure.Messaging
                 // Hatanın ne olduğunu burada göreceğiz
                 Console.WriteLine($"[Consumer FATAL ERROR]: {ex.Message}");
                 Console.WriteLine(ex.StackTrace);
-                throw; // Hatayı yutma, RabbitMQ tekrar denesin (Retry)
+                throw;
             }
         }
 

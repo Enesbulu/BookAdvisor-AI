@@ -1,6 +1,4 @@
 namespace BookAdvisor.Domain.Events
 {
-    public record BookCreatedEvent(Guid BookId, string Title, string Author);
-
-
+    public record BookCreatedEvent(Guid BookId, string Title, string Author, string UserId);
 }

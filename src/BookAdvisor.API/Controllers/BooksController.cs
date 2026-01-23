@@ -1,10 +1,12 @@
 using BookAdvisor.Application.Features.Books.Commands.CreateBook;
 using BookAdvisor.Application.Features.Books.Queries.GetBookById;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookAdvisor.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class BooksController : ControllerBase

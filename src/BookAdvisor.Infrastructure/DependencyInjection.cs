@@ -4,6 +4,7 @@ using BookAdvisor.Infrastructure.AI;
 using BookAdvisor.Infrastructure.Identity;
 using BookAdvisor.Infrastructure.Messaging;
 using BookAdvisor.Infrastructure.Persistence;
+using BookAdvisor.Infrastructure.Persistence.Interceptors;
 using BookAdvisor.Infrastructure.Persistence.Repositories;
 using BookAdvisor.Infrastructure.Services;
 using MassTransit;
@@ -17,8 +18,14 @@ namespace BookAdvisor.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddScoped<AuditableEntityInterceptor>();   //Interceptor DI kaydı
             //DbContext Kurulumu
-            services.AddDbContext<BookAdvisorDbContext>(opt => opt.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<BookAdvisorDbContext>((sp, opt) =>
+            {
+                var interseptor = sp.GetRequiredService<AuditableEntityInterceptor>();
+                opt.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
+            }
+            );
 
             //Identity Core Kurulumu
             services.AddIdentityCore<ApplicationUser>()

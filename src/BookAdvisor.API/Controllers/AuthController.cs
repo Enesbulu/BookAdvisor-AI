@@ -1,3 +1,4 @@
+using BookAdvisor.Application.DTOs.Auth;
 using BookAdvisor.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,42 +20,27 @@ namespace BookAdvisor.API.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] CustomRegisterRequest request)
+        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
-            var result = await _identityService.RegisterAsync(request.Email, request.Password, firstName: request.FirstName, lastName: request.LastName);
+            var result = await _identityService.RegisterAsync(request);
 
             if (!result.Success)
             {
-                return BadRequest(new { Error = result.ErrorMessage });
+                return BadRequest(new AuthResponse(UserId: null, Token: null, Success: false, ErrorMessage: result.ErrorMessage));
             }
-            return Ok(new { UserId = result.UserId });
+            return Ok(new AuthResponse(UserId: result.UserId, Token: null, Success: true, ErrorMessage: null));
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] CustomLoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var result = await _identityService.LoginAsync(request.Email, request.Password);
+            var result = await _identityService.LoginAsync(request);
             if (!result.Success)
             {
-                return BadRequest(new { Error = result.ErrorMessage });
+                return BadRequest(new AuthResponse(ErrorMessage: result.ErrorMessage, UserId: null, Token: null, Success: false));
             }
-            return Ok(new { Token = result.Token });
+            return Ok(new AuthResponse(UserId: result.UserId, Token: result.Token, Success: true, ErrorMessage: null));
         }
 
-    }
-    // DTO (Data Transfer Objects) Tanımları
-    // Sınıf isimlerini çakışma olmasın diye "Custom" ile başlattım veya direkt buraya koydum.
-    public class CustomRegisterRequest
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-    }
-
-    public class CustomLoginRequest
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
     }
 }

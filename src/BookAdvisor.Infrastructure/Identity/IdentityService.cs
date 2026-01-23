@@ -1,3 +1,4 @@
+using BookAdvisor.Application.DTOs.Auth;
 using BookAdvisor.Application.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -19,51 +20,49 @@ namespace BookAdvisor.Infrastructure.Identity
             _configuration = configuration;
         }
 
-      
-        public async Task<(string Token, bool Success, string ErrorMessage)> LoginAsync(string email, string password)
+
+        public async Task<(string Token, bool Success, string ErrorMessage, string UserId)> LoginAsync(LoginRequest request)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
             {
-                return (Token: string.Empty, Success: false, ErrorMessage: "User not found.");
+                return (Token: string.Empty, Success: false, ErrorMessage: "User not found.", UserId: string.Empty);
             }
-            var checkPassword = await _userManager.CheckPasswordAsync(user: user, password: password);
+            var checkPassword = await _userManager.CheckPasswordAsync(user: user, password: request.Password);
             if (!checkPassword)
-                return (Token: string.Empty, Success: false, ErrorMessage: "Hatalı Şifre");
+                return (Token: string.Empty, Success: false, ErrorMessage: "Hatalı Şifre", UserId: string.Empty);
             //Token Oluşturma İşlemi
-            var token = GenerateJwtToken(user: user);
-            return (Token: token, Success: true, ErrorMessage: null);
+            var token = GenerateJwtToken(user: user)!;
 
+            return (Token: token, Success: true, ErrorMessage: string.Empty, UserId: user.Id);
         }
 
-        public async Task<(bool Success, string UserId, string ErrorMessage)> RegisterAsync(string email, string password, string firstName, string lastName)
+        public async Task<(bool Success, string UserId, string ErrorMessage)> RegisterAsync(RegisterRequest request)
         {
-            var existingUser = await _userManager.FindByEmailAsync(email);
+            var existingUser = await _userManager.FindByEmailAsync(request.Email);
             if (existingUser != null)
             {
-                return (Succes: false, UserId: string.Empty, ErrorMessage: "Email already in use.");
+                return (Success: false, UserId: string.Empty, ErrorMessage: "Email already in use.");
             }
 
             var user = new ApplicationUser
             {
-                UserName = email,
-                Email = email,
-                FirstName = firstName,
-                LastName = lastName,
+                UserName = request.Email,
+                Email = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
                 UseSystemKeys = true // Varsayılan olarak sistem key'ini kullanır
             };
-            var result = await _userManager.CreateAsync(user: user, password: password);
+            var result = await _userManager.CreateAsync(user: user, password: request.Password);
             if (!result.Succeeded)
             {
                 var errors = string.Join(",", result.Errors.Select(e => e.Description));
-                return (Succes: false, UserId: string.Empty, ErrorMessage: errors);
+                return (Success: false, UserId: string.Empty, ErrorMessage: errors);
             }
 
-            return (Succes: true, UserId: user.Id, ErrorMessage: string.Empty);
+            return (Success: true, UserId: user.Id, ErrorMessage: string.Empty);
 
         }
-
-
 
         private string GenerateJwtToken(ApplicationUser user)
         {

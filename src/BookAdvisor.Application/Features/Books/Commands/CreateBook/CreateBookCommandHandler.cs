@@ -4,7 +4,6 @@ using BookAdvisor.Domain.Interfaces;
 using MassTransit;
 using MediatR;
 
-
 namespace BookAdvisor.Application.Features.Books.Commands.CreateBook
 {
     public class CreateBookCommandHandler : IRequestHandler<CreateBookCommand, Guid>
@@ -20,13 +19,15 @@ namespace BookAdvisor.Application.Features.Books.Commands.CreateBook
         public async Task<Guid> Handle(CreateBookCommand request, CancellationToken cancellationToken)
         {
             var book = new Book(title: request.Title, author: request.Author, isbn: request.ISBN, description: request.Description);
-
+            // Repository, Interceptor sayesinde CreatedBy alanını dolduracak.
             await _bookRepository.AddAsync(book);
 
             //Eğer Description boş ise AI servisi ile doldurulması için event yayınla
             if (string.IsNullOrWhiteSpace(request.Description))
-                await _publishEndpoint.Publish(new BookCreatedEvent(BookId: book.Id, Title: book.Title, Author: book.Author), cancellationToken);
-
+            {
+                var userId = book.CreatedBy ?? string.Empty;
+                await _publishEndpoint.Publish(new BookCreatedEvent(UserId: userId, BookId: book.Id, Title: book.Title, Author: book.Author), cancellationToken);
+            }
             return book.Id;
         }
     }

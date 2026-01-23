@@ -1,11 +1,16 @@
+using BookAdvisor.API.Services;
 using BookAdvisor.Application;
+using BookAdvisor.Application.Interfaces;
 using BookAdvisor.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
+/**************************************/
 //JWT Token Ayarları
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = Encoding.ASCII.GetBytes(jwtSettings["Secret"]);
@@ -30,13 +35,47 @@ builder.Services.AddAuthentication(opt =>
     };
 });
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+//HttpContext erişimi için
+builder.Services.AddHttpContextAccessor();
+//Mevcut kullanıcı servisi ekleme
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    //Swagger versiyon bilgisi konfigürasyonu
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "BookAdvisor API",
+        Version = "v1"
+    });
+    // JWT Bearer konfigürasyonu
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Lütfen token bilgisini 'Bearer [TOKEN] formatında giriniz.'",
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
 
-builder.Services.AddOpenApi();
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {new OpenApiSecurityScheme
+        {
+         Reference = new Microsoft.OpenApi.Models.OpenApiReference
+            {
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
+            }
+        },
+        new string[]{ } }
+    });
+
+});
+
+//builder.Services.AddOpenApi();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
