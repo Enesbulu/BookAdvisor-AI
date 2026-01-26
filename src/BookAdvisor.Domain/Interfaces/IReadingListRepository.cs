@@ -4,22 +4,54 @@ namespace BookAdvisor.Domain.Interfaces
 {
     public interface IReadingListRepository
     {
-        //Yeni bir liste oluşturma
+        /// <summary>
+        /// Yeni bir liste oluşturma
+        /// </summary>
+        /// <param name="readingList"></param>
+        /// <returns></returns>
         Task AddAsync(ReadingList readingList);
 
-        //Bir kullalnıcının tüm listelerini getirme
+        /// <summary>
+        /// Bir kullanıcının tüm listelerini getirme
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         Task<List<ReadingList>> GetISerListsAsync(string userId);
 
-        //Listeyi Id ile bulma
+        /// <summary>
+        /// Listeyi Id ile bulma
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         Task<ReadingList?> GetByIdAsync(Guid id);
 
-        //Değişiklikleri kaydetme
+        /// <summary>
+        /// Değişiklikleri kaydetme
+        /// </summary>
+        /// <param name="readingList"></param>
+        /// <returns></returns>
         Task UpdateAsync(ReadingList readingList);
 
-        //Id ile listenin kitap bilgisini kitapla birlikte alma
+        /// <summary>
+        /// Id ile listenin kitap bilgisini kitapla birlikte alma
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <returns></returns>
         Task<ReadingList?> GetByIdWithBooksAsync(Guid bookId);
 
+        /// <summary>
+        /// Listeye Eleman ekleme(?)
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         Task AddListItemAsync(ReadingListItem item);
+
+        /// <summary>
+        /// Listeden Kitap Silme işlemi yapar.
+        /// </summary>
+        /// <param name="items"></param>
+        /// <returns></returns>
+        Task RemoveBookFromListItemsAsync(ReadingListItem items);
 
     }
 }

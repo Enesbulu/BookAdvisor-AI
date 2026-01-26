@@ -64,10 +64,21 @@ namespace BookAdvisor.Infrastructure.Persistence.Repositories
                 .FirstOrDefaultAsync(r => r.Id == bookId);  //Her item'ın içindeki Book tablosunu getir (JOIN)
         }
 
-        // Yeni oluşturulan ListItem alır ve veritabanına ekler.
+        /// <summary>
+        /// Yeni oluşturulan ListItem alır ve veritabanına ekler.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public async Task AddListItemAsync(ReadingListItem item)
         {
             await _context.ReadingListItems.AddAsync(item);
+            await _context.SaveChangesAsync();
+        }
+
+        //
+        public async Task RemoveBookFromListItemsAsync(ReadingListItem items)
+        {
+            _context.ReadingListItems.Remove(items);
             await _context.SaveChangesAsync();
         }
     }

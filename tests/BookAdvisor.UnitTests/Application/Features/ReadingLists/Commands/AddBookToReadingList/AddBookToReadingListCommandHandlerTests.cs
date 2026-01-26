@@ -40,10 +40,13 @@ namespace BookAdvisor.UnitTests.Application.Features.ReadingLists.Commands.AddBo
 
             ///Act-Eylem
             await _handler.Handle(command, CancellationToken.None);
+            //var newItem = readingList.AddBookAtReadingList(command.BookId);
 
             ///Assert-Doğrulama
             //UpdateAsync  çağrısı ve işlemi başarılı mı
-            _mockReadingListRepository.Verify(x => x.UpdateAsync(readingList), Times.Once);
+            _mockReadingListRepository.Verify(x => x.AddListItemAsync(It.Is<ReadingListItem>(item =>
+            item.BookId == bookId &&
+            item.ReadingListId == readingList.Id)), Times.Once);
 
             //Listeye eleman eklendi mi kontrolü
             readingList.Items.Should().Contain(x => x.BookId == bookId);

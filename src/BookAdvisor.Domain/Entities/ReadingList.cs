@@ -43,5 +43,21 @@ namespace BookAdvisor.Domain.Entities
             _items.Add(newItem);
             return newItem;
         }
+
+        /// <summary>
+        ///  Belirtilen kitabı listeden çıkarır.
+        /// </summary>
+        /// <param name="bookId">Listeden silinecek bookId</param>
+        /// <returns>Silinecek olan item nesnesi (Repository'e vermek için) veya null.</returns>
+        public ReadingListItem? RemoveBookFromReadingList(Guid bookId)
+        {
+            var item = _items.FirstOrDefault(i => i.BookId == bookId);
+            if (item != null)
+            {
+                _items.Remove(item);
+                return item;    //Repositori içerisinde silme işlemi yapılacak.
+            }
+            return null;
+        }
     }
 }
