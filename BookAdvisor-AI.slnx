@@ -5,4 +5,5 @@
     <Project Path="src/BookAdvisor.Domain/BookAdvisor.Domain.csproj" />
     <Project Path="src/BookAdvisor.Infrastructure/BookAdvisor.Infrastructure.csproj" />
   </Folder>
+  <Project Path="tests/BookAdvisor.UnitTests/BookAdvisor.UnitTests.csproj" />
 </Solution>

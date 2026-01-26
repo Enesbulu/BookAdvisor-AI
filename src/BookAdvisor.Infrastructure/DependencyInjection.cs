@@ -55,9 +55,11 @@ namespace BookAdvisor.Infrastructure
 
             //Servis Kayıtları
             services.AddScoped<IBookRepository, BookRepository>();
+            services.AddScoped<IReadingListRepository, ReadingListRepository>();
             services.AddScoped<IAiService, GeminiService>();
             services.AddScoped<IAiKeyProvider, AiKeyProvider>();   //BYOK Servisi
             services.AddScoped<IIdentityService, IdentityService>();
+
 
             return services;
         }
