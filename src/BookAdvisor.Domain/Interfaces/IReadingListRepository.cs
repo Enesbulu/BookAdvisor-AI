@@ -16,7 +16,7 @@ namespace BookAdvisor.Domain.Interfaces
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<List<ReadingList>> GetISerListsAsync(string userId);
+        Task<List<ReadingList>> GetUserListsAsync(string userId);
 
         /// <summary>
         /// Listeyi Id ile bulma

@@ -6,6 +6,7 @@ using BookAdvisor.Application.Features.ReadingLists.Commands.CreateReadingList;
 using BookAdvisor.Application.Features.ReadingLists.Commands.DeleteReadingList;
 using BookAdvisor.Application.Features.ReadingLists.Commands.RemoveBookFromReadingList;
 using BookAdvisor.Application.Features.ReadingLists.Queries.GetReadingListById;
+using BookAdvisor.Application.Features.ReadingLists.Queries.GetUserReadingLists;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,13 +29,13 @@ namespace BookAdvisor.API.Controllers
         }
 
         //GET api-/reading-lists
-        //[HttpGet]
-        //public async Task<IActionResult> GetALl()
-        //{
-        //    var query = new GetUserReadingListQuery();
-        //    var result = await _mediator.Send(query);
-        //    return Ok(result);
-        //}
+        [HttpGet]
+        public async Task<IActionResult> GetALl()
+        {
+            var query = new GetUserReadingListQuery();
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
 
         //GET api/reading-lists/{id}
         /// <summary>

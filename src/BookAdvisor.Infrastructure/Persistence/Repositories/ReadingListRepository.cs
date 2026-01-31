@@ -24,7 +24,7 @@ namespace BookAdvisor.Infrastructure.Persistence.Repositories
             return await _context.ReadingLists.Include(r => r.Items).FirstOrDefaultAsync(r => r.Id == id);
         }
 
-        public async Task<List<ReadingList>> GetISerListsAsync(string userId)
+        public async Task<List<ReadingList>> GetUserListsAsync(string userId)
         {
             return await _context.ReadingLists.Where(r => r.UserId == userId)
                 .OrderByDescending(r => r.CreateDate)
