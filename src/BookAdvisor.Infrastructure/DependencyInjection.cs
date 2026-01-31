@@ -23,7 +23,7 @@ namespace BookAdvisor.Infrastructure
             services.AddDbContext<BookAdvisorDbContext>((sp, opt) =>
             {
                 var interseptor = sp.GetRequiredService<AuditableEntityInterceptor>();
-                opt.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
+                opt.UseNpgsql(configuration.GetConnectionString("DefaultConnection")).AddInterceptors(interseptor);
             }
             );
 

@@ -26,6 +26,24 @@ namespace BookAdvisor.Domain.Entities
             _items.Add(new ReadingListItem(readingListId: this.Id, bookId: bookId));
         }
 
+        /// <summary>
+        /// Toplu olarak listeye kitap ekleme metodu.
+        /// </summary>
+        /// <param name="bookIds">Listeye eklenecek kitapların id listesi</param>
+        /// <returns></returns>
+        public List<ReadingListItem> AddBooksToReadingList(List<Guid> bookIds)
+        {
+            var newItems = new List<ReadingListItem>();
+            foreach (var bookId in bookIds)
+            {
+                if (_items.Any(i => i.BookId == bookId)) continue;  //Zaten listede varsa atla
+                var newItem = new ReadingListItem(this.Id, bookId);
+                _items.Add(newItem);
+                newItems.Add(newItem);
+            }
+            return newItems;    //sadece yeni eklenenleri dön.
+        }
+
 
         /// <summary>
         /// Listeye Kitap ekleme işlemi, geriye eklenen itemı dönüyor.
@@ -58,6 +76,28 @@ namespace BookAdvisor.Domain.Entities
                 return item;    //Repositori içerisinde silme işlemi yapılacak.
             }
             return null;
+        }
+
+        public List<ReadingListItem> RemoveMultipleBooksFromThisReadingList(List<Guid> bookIdsToRemove)
+        {
+            //Silinecek nesnelerin toplanması
+            var deletedItemsToReturn = new List<ReadingListItem>();
+
+            foreach (var bookId in bookIdsToRemove)
+            {
+                //Kitap listede mi kontrolü
+                var itemFound = _items.FirstOrDefault(i => i.BookId == bookId);
+
+                if (itemFound != null)
+                {
+                    //Listeden çıkarma
+                    _items.Remove(itemFound);
+                    //silinenler içerisine eklem
+                    deletedItemsToReturn.Add(itemFound);
+                }
+            }
+            //silinen nesneleri geri dönme
+            return deletedItemsToReturn;
         }
     }
 }

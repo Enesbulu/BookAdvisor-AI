@@ -36,7 +36,7 @@ namespace BookAdvisor.Application.Features.ReadingLists.Commands.RemoveBookFromR
             if (itemToDelete == null) return;
 
             //repo, db den sil
-            await _readingListRepository.RemoveBookFromListItemsAsync(itemToDelete);
+            await _readingListRepository.RemoveBookFromListItemAsync(itemToDelete);
 
         }
     }

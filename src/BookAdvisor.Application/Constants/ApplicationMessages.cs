@@ -10,6 +10,8 @@ namespace BookAdvisor.Application.Constants
         // Reading List Mesajları
         public const string ReadingListCreated = "Okuma listesi başarıyla oluşturuldu.";
         public const string ReadingListNotFound = "Belirtilen okuma listesi bulunamadı.";
+        public const string BookAddedToList = "Kitap listeye eklendi.";
+
 
         // Genel Hatalar
         public const string UnauthorizedAccess = "Bu işlem için yetkiniz yok.";

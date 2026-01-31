@@ -33,25 +33,6 @@ namespace BookAdvisor.Infrastructure.Persistence.Repositories
 
         public async Task UpdateAsync(ReadingList readingList)
         {
-            /*foreach (var item in readingList.Items)
-            {
-                var entry = _context.Entry(item);
-
-                //if (entry.State == EntityState.Detached || entry.State == EntityState.Unchanged)
-                //{
-                //    entry.State = EntityState.Added;
-                //}
-                //var isTracked = _context.ChangeTracker.Entries<ReadingListItem>().Any(e => e.Entity.Id == item.Id);
-                //if (!isTracked)
-                //{
-                //    _context.Entry(item).State = EntityState.Added;
-                //}
-                if (entry.State == EntityState.Detached)
-                {
-                    entry.State = EntityState.Added;
-                }
-            }*/
-
             _context.ReadingLists.Update(readingList);
             await _context.SaveChangesAsync();
         }
@@ -75,11 +56,35 @@ namespace BookAdvisor.Infrastructure.Persistence.Repositories
             await _context.SaveChangesAsync();
         }
 
-        //
-        public async Task RemoveBookFromListItemsAsync(ReadingListItem items)
+        /// <summary>
+        /// Okuma listesinden kitap silmek
+        /// </summary>
+        /// <param name="item">Listeden silinecek kitap</param>
+        /// <returns></returns>
+        public async Task RemoveBookFromListItemAsync(ReadingListItem item)
         {
-            _context.ReadingListItems.Remove(items);
+            _context.ReadingListItems.Remove(item);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(ReadingList readingList)
+        {
+            _context.ReadingLists.Remove(readingList);
+            await _context.SaveChangesAsync();
+        }
+
+
+        public async Task AddListItemsRepository(List<ReadingListItem> items)
+        {
+            await _context.ReadingListItems.AddRangeAsync(items);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveBooksFromListItemsAsync(List<ReadingListItem> itemsToDelete)
+        {
+            //Performansılı olarak silme yöntemi(RemoveRange). Toplu silme sorgusu gönderme. 
+            _context.ReadingListItems.RemoveRange(itemsToDelete);
+            await _context.SaveChangesAsync();  //Değişiklikleri kaydet
         }
     }
 }

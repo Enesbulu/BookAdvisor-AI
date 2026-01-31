@@ -51,7 +51,29 @@ namespace BookAdvisor.Domain.Interfaces
         /// </summary>
         /// <param name="items"></param>
         /// <returns></returns>
-        Task RemoveBookFromListItemsAsync(ReadingListItem items);
+        Task RemoveBookFromListItemAsync(ReadingListItem items);
+
+        /// <summary>
+        /// Okuam Listesini siler
+        /// </summary>
+        /// <param name="readingList"></param>
+        /// <returns></returns>
+        Task DeleteAsync(ReadingList readingList);
+
+        /// <summary>
+        /// Listeye Toplu Kitap Ekleme
+        /// </summary>
+        /// <param name="items">Eklenecek kitapların listesini içerir</param>
+        /// <returns></returns>
+        Task AddListItemsRepository(List<ReadingListItem> items);
+
+        /// <summary>
+        /// Okuma listesinden toplu kitap silme
+        /// </summary>
+        /// <param name="itemsToDelete">Silinecek veritabanı nesnelerinin listesi</param>
+        /// <returns></returns>
+        Task RemoveBooksFromListItemsAsync(List<ReadingListItem> itemsToDelete);
+
 
     }
 }
