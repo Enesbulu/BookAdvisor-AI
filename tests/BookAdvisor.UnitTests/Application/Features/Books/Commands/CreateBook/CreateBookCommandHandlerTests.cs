@@ -89,7 +89,25 @@ namespace BookAdvisor.UnitTests.Application.Features.Books.Commands.CreateBook
                         b => b.Title == command.Title && b.Author == command.Author)), Times.Once);
         }
 
+        [Fact]
+        public async Task Handle_Should_Create_Book_Successfully()
+        {
+            // ARRANGE
+            var command = new CreateBookCommand("1984", "George Orwell", "Distopya","123-123-123");
 
+            // ACT
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // ASSERT
+            // 1. Repository'nin AddAsync metodu 1 kere çağrıldı mı?
+            _mockBookRepository.Verify(x => x.AddAsync(It.IsAny<Book>()), Times.Once);
+
+            // 2. Çağrılan metodun içine giden veriler doğru mu?
+            _mockBookRepository.Verify(x => x.AddAsync(It.Is<Book>(b =>
+                b.Title == "1984" &&
+                b.Author == "George Orwell"
+            )), Times.Once);
+        }
 
         //Çoklu veri testi (Data Driven Test)
         [Theory]    //Fact yerine theory kullanıyorum

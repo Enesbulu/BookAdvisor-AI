@@ -1,4 +1,5 @@
 using BookAdvisor.Application.Features.Books.Commands.CreateBook;
+using BookAdvisor.Application.Features.Books.Queries.GetAllBooks;
 using BookAdvisor.Application.Features.Books.Queries.GetBookById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookAdvisor.API.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/books")]
     [ApiController]
     public class BooksController : ControllerBase
     {
@@ -18,21 +19,35 @@ namespace BookAdvisor.API.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(CreateBookCommand command)
+        //GET api/books?pageNumber=1&pageSize=10&searchKeyword=Dune
+        /// <summary>
+        /// Sistemdeki bütün kitapları sayfalama ve arama filtresiyle getirir
+        /// </summary>
+        /// <param name="query">Arama parametresi</param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> GetAllBooks([FromQuery] GetAllBooksQuery query)
         {
-            var id = await _mediator.Send(command);
-            return Ok(id);
+            var result = await _mediator.Send(query);
+            return Ok(result);
         }
 
+        //GET api/books/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
             var query = new GetBookByIdQuery(id);
-            var book = await _mediator.Send(query);
-            if (book == null)
-                return NotFound($"ID'si {id} olan kitap bulunamadı.");
-            return Ok(book);
+            var result = await _mediator.Send(query);
+            return Ok(result);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateBookCommand command)
+        {
+            var id = await _mediator.Send(command);
+            return CreatedAtAction(nameof(GetById), new { id = id }, id);
+        }
+
+
     }
 }

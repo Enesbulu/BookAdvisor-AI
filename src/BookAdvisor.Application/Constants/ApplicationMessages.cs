@@ -15,5 +15,7 @@ namespace BookAdvisor.Application.Constants
 
         // Genel Hatalar
         public const string UnauthorizedAccess = "Bu işlem için yetkiniz yok.";
+
+        public const string BookNotFound = "Kitap bulunamadı.";
     }
 }

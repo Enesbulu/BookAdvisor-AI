@@ -1,10 +1,10 @@
-using BookAdvisor.Domain.Entities;
+using BookAdvisor.Application.Constants;
 using BookAdvisor.Domain.Interfaces;
 using MediatR;
 
 namespace BookAdvisor.Application.Features.Books.Queries.GetBookById
 {
-    public class GetBookByIdQueryHandler : IRequestHandler<GetBookByIdQuery, Book>
+    public class GetBookByIdQueryHandler : IRequestHandler<GetBookByIdQuery, BookDetailDto>
     {
         private readonly IBookRepository _bookRepository;
 
@@ -13,10 +13,17 @@ namespace BookAdvisor.Application.Features.Books.Queries.GetBookById
             _bookRepository = bookRepository;
         }
 
-        public async Task<Book> Handle(GetBookByIdQuery request, CancellationToken cancellationToken)
+        public async Task<BookDetailDto> Handle(GetBookByIdQuery request, CancellationToken cancellationToken)
         {
             var book = await _bookRepository.GetByIdAsync(request.BookId);
-            return book;
+            if (book == null)
+                throw new Exception(ApplicationMessages.BookNotFound);
+            return new BookDetailDto(
+                Id: book.Id,
+                Title: book.Title,
+                Author: book.Author,
+                Description: book.Description,
+                CreatedDate: book.CreateDate);
         }
     }
 }
