@@ -80,6 +80,17 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+//CORS Servisi ekleme
+builder.Services.AddCors(
+    opt =>
+    {
+        opt.AddPolicy("AllowReactApp", policy =>
+        {
+            policy.WithOrigins("http://localhost:5173") //React uygulaması adresi
+            .AllowAnyHeader()
+            .AllowAnyMethod();  //bütün http isteklerine izin verme
+        });
+    });
 
 var app = builder.Build();
 
@@ -92,8 +103,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthentication(); //Yetkilendirme Orta Katmanı
-app.UseAuthorization(); //Kimlik Doğrulama Orta Katmanı
+app.UseCors("AllowReactApp");   //CORS servisi yetki verme kullanım katmanı
+app.UseAuthentication();        //Yetkilendirme Orta Katmanı
+app.UseAuthorization();         //Kimlik Doğrulama Orta Katmanı
 app.MapControllers();
 
 
