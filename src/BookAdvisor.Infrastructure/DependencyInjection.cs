@@ -59,6 +59,7 @@ namespace BookAdvisor.Infrastructure
             services.AddScoped<IAiService, GeminiService>();
             services.AddScoped<IAiKeyProvider, AiKeyProvider>();   //BYOK Servisi
             services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<IReviewRepository, ReviewRepository>();
 
 
             return services;

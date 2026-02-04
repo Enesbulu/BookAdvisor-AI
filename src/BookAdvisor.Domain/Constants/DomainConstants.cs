@@ -13,5 +13,10 @@ namespace BookAdvisor.Domain.Constants
         {
             public const int NameMaxLength = 100;
         }
+        public static class Review
+        {
+            public const string RatingOutOfRange = "Puan 1 ile 5 arasında olmalıdır.";
+            public const string UserInformationIsRequired = "Kullanıcı bilgisi zorunludur.";
+        }
     }
 }

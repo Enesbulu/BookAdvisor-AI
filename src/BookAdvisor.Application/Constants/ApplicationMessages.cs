@@ -12,6 +12,12 @@ namespace BookAdvisor.Application.Constants
         public const string ReadingListNotFound = "Belirtilen okuma listesi bulunamadı.";
         public const string BookAddedToList = "Kitap listeye eklendi.";
 
+        //Reviews Mesajları
+        public const string AlreadyReviewed= "Bu kitap için zaten bir değerlendirmeniz bulunmaktadır. Puanınızı güncellemek için düzenleme işlemini kullanınız.";
+        public const string UseToUpdateRating= "Puanınızı güncellemek için düzenleme işlemini kullanınız. ";
+        public const string AddingReviewSuccess= "Değerlendirmeniz başarıyla eklenmiştir. ";
+
+
 
         // Genel Hatalar
         public const string UnauthorizedAccess = "Bu işlem için yetkiniz yok.";

@@ -14,6 +14,7 @@ namespace BookAdvisor.Infrastructure.Persistence
         public DbSet<Book> Books { get; set; }
         public DbSet<ReadingList> ReadingLists { get; set; }
         public DbSet<ReadingListItem> ReadingListItems { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,6 +37,18 @@ namespace BookAdvisor.Infrastructure.Persistence
                 }
             );
 
+            //Review Configuration
+            modelBuilder.Entity<Review>(entity =>
+                {
+                    entity.HasKey(e => e.Id);
+                    entity.Property(e => e.Rating).IsRequired();    //Puan zorunlu
+                    entity.Property(e => e.Comment).HasMaxLength(1000); //Yorum opsiyonel
+                    entity.HasOne(r => r.Book).WithMany()   //bir kitabın birden fazla yorumu olur.
+                    .HasForeignKey(r => r.BookId).OnDelete(DeleteBehavior.Cascade);    //Kitap silinirse yorumlar da silinir.
+                    entity.HasIndex(r => new { r.BookId, r.UserId }).IsUnique();    //Bir kişi bir kere yorum yapabilir.
+
+                }
+            );
 
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
